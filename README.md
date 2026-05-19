@@ -46,7 +46,7 @@ Don't close the command window — it shows progress.
 ### Step 4: Save the archive
 
 When finished, a **Save As** dialog appears.  
-Choose a safe location for your archive — for example **OneDrive**, **Documents**, or a USB drive.
+Choose a safe location for your archive — for example **OneDrive** or a USB drive.
 
 The archive then opens automatically in your browser, and Explorer opens with the file selected so you can see exactly where it ended up.
 
@@ -89,7 +89,7 @@ The export runs in the Terminal window. Don't close it.
 ### Step 5: Save the archive
 
 When finished, a **Save As** dialog appears.  
-Choose a safe location for your archive — for example **OneDrive**, **Documents**, or a USB drive.
+Choose a safe location for your archive — for example **OneDrive** or a USB drive.
 
 The archive then opens automatically in your browser, and Finder reveals the file so you can see exactly where it ended up.
 
