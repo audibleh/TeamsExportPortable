@@ -200,21 +200,45 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
+:: ---- Step 6: Ask user where to save the archive ----
+echo.
+echo   Choose where to save the archive...
+
+set "SAVE_PATH="
+for /f "usebackq delims=" %%P in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Windows.Forms; $d = New-Object System.Windows.Forms.SaveFileDialog; $d.Title = 'Save your Teams archive'; $d.FileName = 'teams-archive.html'; $d.Filter = 'HTML files (*.html)^|*.html'; $d.DefaultExt = 'html'; $d.AddExtension = $true; if ($d.ShowDialog() -eq 'OK') { Write-Output $d.FileName }"`) do set "SAVE_PATH=%%P"
+
+set "FINAL_PATH=%~dp0teams-archive.html"
+if defined SAVE_PATH (
+    if /I not "%SAVE_PATH%"=="%~dp0teams-archive.html" (
+        move /Y "%~dp0teams-archive.html" "%SAVE_PATH%" >nul 2>&1
+        if exist "%SAVE_PATH%" (
+            set "FINAL_PATH=%SAVE_PATH%"
+            echo   Saved to: %SAVE_PATH%
+        ) else (
+            echo   Could not save to chosen location, keeping in current folder.
+        )
+    ) else (
+        echo   Keeping archive in current folder.
+    )
+) else (
+    echo   Keeping archive in current folder.
+)
+
 echo.
 echo  ============================================================
 echo.
 echo   DONE!
 echo.
-echo   The file "teams-archive.html" is in this folder.
+echo   Your archive has been saved.
 echo   Open it in a browser to view your chats.
-echo.
-echo   Copy the file to a safe location (USB, OneDrive, etc.)
-echo   before your machine is migrated.
 echo.
 echo  ============================================================
 echo.
+echo   Location: %FINAL_PATH%
+echo.
 
-:: Open the file
-start "" "%~dp0teams-archive.html"
+:: Open the file and reveal in Explorer
+start "" "%FINAL_PATH%"
+explorer /select,"%FINAL_PATH%"
 
 pause

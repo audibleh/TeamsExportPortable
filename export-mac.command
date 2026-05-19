@@ -202,21 +202,52 @@ echo "[5/5] Generating HTML archive..."
 
 python -m msteams_export generate-html-archive "$EXPORT_DIR" --output "$ROOT/teams-archive.html"
 
+# ---- Step 6: Ask user where to save the archive ----
+echo ""
+echo "  Choose where to save the archive..."
+
+SAVE_PATH=$(osascript <<'APPLESCRIPT' 2>/dev/null
+try
+    set savePath to choose file name with prompt "Save your Teams archive:" default name "teams-archive.html"
+    return POSIX path of savePath
+on error errMsg number errNum
+    return ""
+end try
+APPLESCRIPT
+)
+
+FINAL_PATH="$ROOT/teams-archive.html"
+if [ -n "$SAVE_PATH" ] && [ "$SAVE_PATH" != "$ROOT/teams-archive.html" ]; then
+    # Make sure file has .html extension
+    case "$SAVE_PATH" in
+        *.html|*.HTML) ;;
+        *) SAVE_PATH="${SAVE_PATH}.html" ;;
+    esac
+    if mv "$ROOT/teams-archive.html" "$SAVE_PATH" 2>/dev/null; then
+        FINAL_PATH="$SAVE_PATH"
+        echo "  Saved to: $FINAL_PATH"
+    else
+        echo "  Could not save to chosen location, keeping in current folder."
+    fi
+else
+    echo "  Keeping archive in current folder."
+fi
+
 echo ""
 echo "  ╔════════════════════════════════════════════════════════════╗"
 echo "  ║                                                            ║"
 echo "  ║   DONE!                                                    ║"
 echo "  ║                                                            ║"
-echo "  ║   The file \"teams-archive.html\" is in this folder.        ║"
+echo "  ║   Your archive has been saved.                             ║"
 echo "  ║   Open it in a browser to view your chats.                 ║"
-echo "  ║                                                            ║"
-echo "  ║   Copy the file to a safe location (USB, OneDrive, etc.)   ║"
-echo "  ║   before your machine is migrated.                         ║"
 echo "  ║                                                            ║"
 echo "  ╚════════════════════════════════════════════════════════════╝"
 echo ""
+echo "  Location: $FINAL_PATH"
+echo ""
 
-# Open the file
-open "$ROOT/teams-archive.html" 2>/dev/null || true
+# Open the file and reveal in Finder
+open "$FINAL_PATH" 2>/dev/null || true
+open -R "$FINAL_PATH" 2>/dev/null || true
 
 read -rp "  Press Enter to close..."
