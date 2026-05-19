@@ -43,10 +43,15 @@ A browser window opens. If you're not already logged in:
 The export runs automatically. This can take **10–60 minutes** depending on how many chats you have.  
 Don't close the command window — it shows progress.
 
-### Step 4: Done!
+### Step 4: Save the archive
 
-When finished, **`teams-archive.html`** opens in your browser.  
-Copy this file somewhere safe (OneDrive, USB, external drive).
+When finished, a **Save As** dialog appears.  
+Choose a safe location for your archive — for example **OneDrive**, **Documents**, or a USB drive.
+
+The archive then opens automatically in your browser, and Explorer opens with the file selected so you can see exactly where it ended up.
+
+> **Tip:** After saving, drag `teams-archive.html` from Explorer onto your browser's bookmarks bar.  
+> That way you have one-click access to your chat history from now on.
 
 ---
 
@@ -81,9 +86,15 @@ Same as Windows — log in, wait for Teams to load, close the browser.
 
 The export runs in the Terminal window. Don't close it.
 
-### Step 5: Done!
+### Step 5: Save the archive
 
-**`teams-archive.html`** opens automatically. Save it somewhere safe.
+When finished, a **Save As** dialog appears.  
+Choose a safe location for your archive — for example **OneDrive**, **Documents**, or a USB drive.
+
+The archive then opens automatically in your browser, and Finder reveals the file so you can see exactly where it ended up.
+
+> **Tip:** After saving, drag `teams-archive.html` from Finder onto your browser's bookmarks bar.  
+> That way you have one-click access to your chat history from now on.
 
 ---
 
