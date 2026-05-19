@@ -38,6 +38,10 @@ A browser window opens. If you're not already logged in:
 2. Wait until Teams loads fully
 3. **Close the browser window** (important!)
 
+> **NB:** Sometimes Teams gets stuck on the loading screen showing only the Teams logo.  
+> If it stays there for a while, you are usually logged in anyway — just close the browser window and let the export continue.  
+> If the export does not proceed, run the script again.
+
 ### Step 3: Wait
 
 The export runs automatically. This can take **10–60 minutes** depending on how many chats you have.  
@@ -81,6 +85,10 @@ The script automatically downloads Python if needed.
 ### Step 3: Log in to Teams
 
 Same as Windows — log in, wait for Teams to load, close the browser.
+
+> **NB:** Sometimes Teams gets stuck on the loading screen showing only the Teams logo.  
+> If it stays there for a while, you are usually logged in anyway — just close the browser window and let the export continue.  
+> If the export does not proceed, run the script again.
 
 ### Step 4: Wait
 
