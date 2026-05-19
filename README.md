@@ -57,11 +57,12 @@ Copy this file somewhere safe (OneDrive, USB, external drive).
 macOS blocks downloaded files by default. Open **Terminal** (search "Terminal" in Spotlight) and run:
 
 ```
-xattr -cr ~/Downloads/TeamsExportPortable
+xattr -cr ~/Downloads/TeamsExportPortable-main
 ```
 
+> When you download the ZIP from GitHub, the unzipped folder is named `TeamsExportPortable-main`.  
 > Adjust the path if you unzipped somewhere else, e.g.  
-> `xattr -cr ~/Desktop/TeamsExportPortable`
+> `xattr -cr ~/Desktop/TeamsExportPortable-main`
 
 ### Step 2: Run the export
 
