@@ -264,6 +264,7 @@ def _build_html(chats: list[dict[str, Any]], index_meta: dict[str, Any]) -> str:
     </div>
   </main>
 </div>
+<div class="credit-egg" aria-hidden="true" title=""><span class="credit-dot">&#9728;</span><span class="credit-text">Crafted with &#9829; by Jon-Erik Tyvand</span></div>
 {msg_blocks_str}
 <script>
 const CHAT_META={meta_json_str};
@@ -465,6 +466,11 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   #sidebar.collapsed{display:none}
   .chat-header{position:relative}
 }
+.credit-egg{position:fixed;bottom:8px;right:10px;z-index:9999;font-size:11px;color:var(--text-light);opacity:.35;transition:opacity .25s ease;user-select:none;pointer-events:auto;display:flex;align-items:center;gap:6px}
+.credit-egg:hover{opacity:1}
+.credit-dot{font-size:11px;cursor:default}
+.credit-text{max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .4s ease,padding .4s ease;padding:0;font-style:italic}
+.credit-egg:hover .credit-text{max-width:240px;padding:0 4px}
 </style>"""
 
 
