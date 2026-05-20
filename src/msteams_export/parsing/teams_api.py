@@ -602,12 +602,14 @@ def _optional_str(value: Any) -> str | None:
 
 
 def _looks_like_embedded_image(*, href: str, item_type: str, media_id: str | None) -> bool:
-    normalized_href = href.lower()
     if "schema.skype.com/emoji" in item_type:
         return False
     if "schema.skype.com/amsimage" in item_type:
         return True
-    if "eu-api.asm.skype.com/" in normalized_href or "api.asm.skype.com/" in normalized_href:
+    host = (urlparse(href).hostname or "").lower()
+    if host in {"api.asm.skype.com", "eu-api.asm.skype.com"} or host.endswith(
+        (".api.asm.skype.com", ".eu-api.asm.skype.com")
+    ):
         return True
     if media_id and media_id.startswith("0-"):
         return True

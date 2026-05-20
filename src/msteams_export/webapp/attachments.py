@@ -338,7 +338,7 @@ def _fetch_with_browser_page(
 
 def _is_asm_storage_url(url: str) -> bool:
     host = (urlparse(url).hostname or "").lower()
-    return host.endswith("asm.skype.com")
+    return host == "asm.skype.com" or host.endswith(".asm.skype.com")
 
 
 def _fetch_with_page_context_fetch(
