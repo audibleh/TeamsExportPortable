@@ -121,7 +121,7 @@ if %ERRORLEVEL% neq 0 (
 )
 
 echo   Installing msteams-export...
-"%PYTHON%" -m pip install "%~dp0." 2>&1
+"%PYTHON%" -m pip install --upgrade --force-reinstall --no-deps "%~dp0." 2>&1
 if %ERRORLEVEL% neq 0 (
     echo   ERROR: Could not install msteams-export.
     echo   Full path: %~dp0.

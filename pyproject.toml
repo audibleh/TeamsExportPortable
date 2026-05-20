@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "msteams-export"
-version = "0.1.8"
+version = "0.1.9"
 description = "Python-first CLI for exporting and inspecting Microsoft Teams web chat data."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -33,6 +33,9 @@ teams-export = "msteams_export.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+"msteams_export.archive" = ["credit_egg.png"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

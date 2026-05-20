@@ -144,7 +144,7 @@ pip install --upgrade pip 2>&1 | tail -1
 echo "  Installing playwright..."
 pip install playwright 2>&1 | tail -1
 echo "  Installing msteams-export..."
-pip install "$ROOT" 2>&1 | tail -1
+pip install --upgrade --force-reinstall --no-deps "$ROOT" 2>&1 | tail -1
 
 echo "  OK: Dependencies installed."
 
