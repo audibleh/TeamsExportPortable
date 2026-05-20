@@ -319,50 +319,65 @@ def export_all_conversations(request: ExportAllRequest) -> ExportAllResult:
                 if request.skip_existing and output_path.exists():
                     existing_meta = _load_existing_meta_validated(output_path)
                     existing_count = int(existing_meta.get("count", 0) or 0)
-                    existing_source = _optional_str(existing_meta.get("source"))
-                    existing_target = _optional_str(existing_meta.get("exportTarget"))
-                    existing_partial = bool(existing_meta.get("partial")) or existing_target in {
-                        "team-space",
-                        "community",
-                    }
-                    existing_warning = _optional_str(existing_meta.get("warning")) or _inferred_warning(
-                        source=existing_source,
-                        export_target=existing_target,
+                    existing_end_at = _optional_str(existing_meta.get("endAt"))
+                    remote_last_at = _optional_str(conversation.get("lastMessageAt"))
+                    # Re-fetch when remote has newer activity than what we already stored.
+                    has_new_activity = bool(
+                        remote_last_at
+                        and (not existing_end_at or remote_last_at > existing_end_at)
                     )
-                    processed_conversations += 1
-                    processed_hidden += int(conversation_hidden)
-                    processed_meeting += int(conversation_meeting)
-                    records.append(
-                        {
-                            **conversation,
-                            "exported": True,
-                            "exportPath": relative_export_path.as_posix(),
-                            "messageCount": existing_count,
-                            "rawCount": int(existing_meta.get("rawCount", 0) or 0),
-                            "startAt": existing_meta.get("startAt"),
-                            "endAt": existing_meta.get("endAt"),
-                            "timeRange": existing_meta.get("timeRange"),
-                            "exportedAt": existing_meta.get("exportedAt"),
-                            "source": existing_source,
-                            "exportTarget": existing_target,
-                            "error": None,
-                            "skipped": True,
-                            "partial": existing_partial,
-                            "warning": existing_warning,
-                            **existing_attachment_stats,
+                    if has_new_activity:
+                        emit_progress(
+                            phase="exporting",
+                            conversation=conversation,
+                            current_status="updating",
+                            note="New messages detected — re-fetching.",
+                        )
+                    else:
+                        existing_source = _optional_str(existing_meta.get("source"))
+                        existing_target = _optional_str(existing_meta.get("exportTarget"))
+                        existing_partial = bool(existing_meta.get("partial")) or existing_target in {
+                            "team-space",
+                            "community",
                         }
-                    )
-                    exported_count += 1
-                    skipped_count += 1
-                    message_count += existing_count
-                    emit_progress(
-                        phase="exporting",
-                        conversation=conversation,
-                        current_status="skipped",
-                        current_message_count=existing_count,
-                        note="Reused existing export file.",
-                    )
-                    continue
+                        existing_warning = _optional_str(existing_meta.get("warning")) or _inferred_warning(
+                            source=existing_source,
+                            export_target=existing_target,
+                        )
+                        processed_conversations += 1
+                        processed_hidden += int(conversation_hidden)
+                        processed_meeting += int(conversation_meeting)
+                        records.append(
+                            {
+                                **conversation,
+                                "exported": True,
+                                "exportPath": relative_export_path.as_posix(),
+                                "messageCount": existing_count,
+                                "rawCount": int(existing_meta.get("rawCount", 0) or 0),
+                                "startAt": existing_meta.get("startAt"),
+                                "endAt": existing_meta.get("endAt"),
+                                "timeRange": existing_meta.get("timeRange"),
+                                "exportedAt": existing_meta.get("exportedAt"),
+                                "source": existing_source,
+                                "exportTarget": existing_target,
+                                "error": None,
+                                "skipped": True,
+                                "partial": existing_partial,
+                                "warning": existing_warning,
+                                **existing_attachment_stats,
+                            }
+                        )
+                        exported_count += 1
+                        skipped_count += 1
+                        message_count += existing_count
+                        emit_progress(
+                            phase="exporting",
+                            conversation=conversation,
+                            current_status="skipped",
+                            current_message_count=existing_count,
+                            note="Reused existing export file.",
+                        )
+                        continue
 
                 try:
                     document = export_live_conversation_document(
