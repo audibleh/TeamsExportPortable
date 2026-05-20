@@ -322,10 +322,18 @@ def export_all_conversations(request: ExportAllRequest) -> ExportAllResult:
                     existing_end_at = _optional_str(existing_meta.get("endAt"))
                     remote_last_at = _optional_str(conversation.get("lastMessageAt"))
                     # Re-fetch when remote has newer activity than what we already stored.
-                    has_new_activity = bool(
-                        remote_last_at
-                        and (not existing_end_at or remote_last_at > existing_end_at)
-                    )
+                    # Compare as datetimes to tolerate fractional-second differences
+                    # (e.g. ``.4470000Z`` vs ``.447Z`` represent the same instant).
+                    existing_dt = _parse_iso_timestamp(existing_end_at)
+                    remote_dt = _parse_iso_timestamp(remote_last_at)
+                    if remote_dt is not None and existing_dt is not None:
+                        has_new_activity = remote_dt > existing_dt
+                    elif remote_dt is not None and existing_dt is None:
+                        # We have remote activity but no stored timestamp — re-fetch to be safe.
+                        has_new_activity = True
+                    else:
+                        # No comparable remote timestamp; trust the existing export.
+                        has_new_activity = False
                     if has_new_activity:
                         emit_progress(
                             phase="exporting",
@@ -679,6 +687,45 @@ def _optional_str(value: Any) -> str | None:
         return None
     text = str(value)
     return text if text else None
+
+
+def _parse_iso_timestamp(value: str | None) -> datetime | None:
+    """Parse an ISO-8601 timestamp, tolerating varying fractional-second precision.
+
+    Teams returns fractional seconds with anywhere from 0 to 7 digits depending on
+    the API surface (Skype IC3 vs. graph). Plain string comparison gives wrong
+    results across surfaces (e.g. ``.4470000Z`` vs ``.447Z``), so normalize to a
+    datetime before comparing.
+    """
+    if not value:
+        return None
+    text = value.strip()
+    if not text:
+        return None
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    if "." in text:
+        head, rest = text.split(".", 1)
+        # Split fractional digits from any trailing timezone offset.
+        tz_index = len(rest)
+        for marker in ("+", "-"):
+            idx = rest.find(marker)
+            if idx != -1 and idx < tz_index:
+                tz_index = idx
+        frac = rest[:tz_index]
+        tail = rest[tz_index:]
+        frac_digits = "".join(ch for ch in frac if ch.isdigit())[:6]
+        if frac_digits:
+            text = f"{head}.{frac_digits}{tail}"
+        else:
+            text = f"{head}{tail}"
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed
 
 
 def _write_index_atomic(
