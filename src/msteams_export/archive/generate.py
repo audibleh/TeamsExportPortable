@@ -6,10 +6,21 @@ per-chat search, date filtering, etc. No server needed.
 """
 from __future__ import annotations
 
+import base64
 import html
 import json
 from pathlib import Path
 from typing import Any
+
+
+def _credit_egg_data_uri() -> str:
+    """Return a data: URI for the credit easter-egg image, or empty string if missing."""
+    img_path = Path(__file__).with_name("credit_egg.png")
+    try:
+        data = img_path.read_bytes()
+    except OSError:
+        return ""
+    return "data:image/png;base64," + base64.b64encode(data).decode("ascii")
 
 
 def generate_html_archive(exports_dir: Path, output_path: Path) -> None:
@@ -189,6 +200,10 @@ def _build_html(chats: list[dict[str, Any]], index_meta: dict[str, Any]) -> str:
         msgs_json = json.dumps(c["messages"], ensure_ascii=False, separators=(",", ":"))
         msg_blocks.append(f'<script type="application/json" id="chat-data-{i}">{msgs_json}</script>')
     msg_blocks_str = "\n".join(msg_blocks)
+    credit_egg_uri = _credit_egg_data_uri()
+    credit_egg_img = (
+        f'<img class="credit-img" src="{credit_egg_uri}" alt="">' if credit_egg_uri else ""
+    )
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -264,7 +279,7 @@ def _build_html(chats: list[dict[str, Any]], index_meta: dict[str, Any]) -> str:
     </div>
   </main>
 </div>
-<div class="credit-egg" aria-hidden="true" title=""><span class="credit-dot">&#9728;</span><span class="credit-text">Crafted with &#9829; by Jon-Erik Tyvand</span></div>
+<div class="credit-egg" aria-hidden="true" title=""><span class="credit-dot">&#9728;</span>{credit_egg_img}<span class="credit-text">Crafted with &#9829; by Jon-Erik Tyvand</span></div>
 {msg_blocks_str}
 <script>
 const CHAT_META={meta_json_str};
@@ -469,6 +484,8 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .credit-egg{position:fixed;bottom:8px;right:10px;z-index:9999;font-size:11px;color:var(--text-light);opacity:.35;transition:opacity .25s ease;user-select:none;pointer-events:auto;display:flex;align-items:center;gap:6px}
 .credit-egg:hover{opacity:1}
 .credit-dot{font-size:11px;cursor:default}
+.credit-img{width:0;height:64px;object-fit:contain;opacity:0;transition:width .4s ease,opacity .4s ease,margin .4s ease;margin:0;border-radius:6px;pointer-events:none}
+.credit-egg:hover .credit-img{width:42px;opacity:1;margin:0 2px}
 .credit-text{max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .4s ease,padding .4s ease;padding:0;font-style:italic}
 .credit-egg:hover .credit-text{max-width:240px;padding:0 4px}
 </style>"""
