@@ -273,7 +273,8 @@ def _suffix(value: str | None) -> str:
 
 def _preview_filename(item: ImagePreviewItem) -> str:
     stem = re.sub(r"[^A-Za-z0-9._-]+", "-", item.label).strip("-") or "image"
-    digest = hashlib.sha1(item.href.encode("utf-8")).hexdigest()[:12]
+    # Non-security digest used only to disambiguate generated preview filenames.
+    digest = hashlib.sha1(item.href.encode("utf-8"), usedforsecurity=False).hexdigest()[:12]
     return f"{digest}-{stem[:80]}.png"
 
 

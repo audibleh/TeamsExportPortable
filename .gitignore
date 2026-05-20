@@ -19,6 +19,7 @@ build/
 # ── Dev / internal scripts ──
 generate_variants.py
 test_exports/
+*_backup.py
 
 # ── OS junk ──
 .DS_Store

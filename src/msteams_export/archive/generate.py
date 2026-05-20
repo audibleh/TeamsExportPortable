@@ -1153,7 +1153,14 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python generate.py <exports_dir> [output.html]")
         sys.exit(1)
-    exports = Path(sys.argv[1])
-    output = Path(sys.argv[2]) if len(sys.argv) > 2 else exports.parent / "teams-archive.html"
+    # Resolve CLI-provided paths defensively. This is an operator-run tool,
+    # but normalising guards against accidental relative traversal in the
+    # provided arguments before they are passed downstream.
+    exports = Path(sys.argv[1]).expanduser().resolve(strict=False)
+    output = (
+        Path(sys.argv[2]).expanduser().resolve(strict=False)
+        if len(sys.argv) > 2
+        else exports.parent / "teams-archive.html"
+    )
     generate_html_archive(exports, output)
     print(f"Archive written to {output}")

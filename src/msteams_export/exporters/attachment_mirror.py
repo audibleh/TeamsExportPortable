@@ -489,7 +489,8 @@ def _asset_relative_path(
 
 
 def _asset_filename(*, label: str, href: str, index: int) -> str:
-    digest = hashlib.sha1(href.encode("utf-8")).hexdigest()[:10]
+    # Non-security digest used only to disambiguate generated asset filenames.
+    digest = hashlib.sha1(href.encode("utf-8"), usedforsecurity=False).hexdigest()[:10]
     text = unicodedata.normalize("NFKD", label or "attachment")
     text = text.encode("ascii", "ignore").decode("ascii")
     text = re.sub(r"[^A-Za-z0-9._-]+", "-", text).strip("-") or "attachment"

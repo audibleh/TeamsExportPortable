@@ -1269,14 +1269,16 @@ def _html_bundle_filename(name: str, *, key: str) -> str:
     else:
         stem, ext = candidate, ""
     safe_stem = _html_bundle_segment(stem, fallback="attachment")
-    digest = hashlib.sha1(key.encode("utf-8")).hexdigest()[:12]
+    # Non-security digest used only to disambiguate bundled attachment filenames.
+    digest = hashlib.sha1(key.encode("utf-8"), usedforsecurity=False).hexdigest()[:12]
     return f"{safe_stem}-{digest}{ext}"
 
 
 def _html_bundle_dir_token(value: str, *, prefix: str, fallback: str) -> str:
     candidate = _html_bundle_segment(value, fallback=fallback)
     shortened = candidate[:24].strip("-._") or fallback
-    digest = hashlib.sha1(value.encode("utf-8")).hexdigest()[:10]
+    # Non-security digest used only to disambiguate bundled directory names.
+    digest = hashlib.sha1(value.encode("utf-8"), usedforsecurity=False).hexdigest()[:10]
     return f"{prefix}-{shortened}-{digest}"
 
 
